@@ -84,6 +84,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            // Robolectric's SDK 36 runtime pokes FileDescriptor internals.
+            it.jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
+            // Robolectric's SDK 36 runtime needs Java 21; the build itself stays on the CI JDK.
+            it.javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) })
+        }
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -201,7 +211,20 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+    testImplementation(libs.ktor.client.mock)
+    testImplementation(platform(libs.koin.bom))
+    testImplementation(libs.koin.test.junit4)
+    testImplementation(libs.androidx.room.testing)
+    testImplementation(libs.androidx.work.testing)
+    testImplementation(libs.androidx.test.core.ktx)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.room.testing)
+    androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
