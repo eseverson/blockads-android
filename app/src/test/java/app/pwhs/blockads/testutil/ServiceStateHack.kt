@@ -6,8 +6,8 @@ import app.pwhs.blockads.service.VpnState
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
- * The services keep their state in private companion flows. Until a VpnStateRepository seam exists,
- * tests poke them via reflection and must reset to STOPPED afterwards.
+ * Sets service state for tests; reset to STOPPED afterwards. The VPN side goes through its VpnStatusStore,
+ * the root proxy still keeps a private companion flow and is poked via reflection.
  */
 object ServiceStateHack {
     @Suppress("UNCHECKED_CAST")
@@ -15,7 +15,7 @@ object ServiceStateHack {
         owner.getDeclaredField("_state").apply { isAccessible = true }.get(null) as MutableStateFlow<VpnState>
 
     fun setVpn(state: VpnState) {
-        flow(AdBlockVpnService::class.java).value = state
+        AdBlockVpnService.status.state.value = state
     }
 
     fun setRoot(state: VpnState) {
