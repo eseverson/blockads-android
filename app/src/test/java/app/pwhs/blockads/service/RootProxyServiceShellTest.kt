@@ -108,7 +108,8 @@ class RootProxyServiceShellTest {
 
     private fun startRunning() {
         command(RootProxyService.ACTION_START)
-        awaitTrue(message = "RUNNING") { RootProxyService.isRunning }
+        // The service flips to RUNNING a moment before it records the start time, on another thread.
+        awaitTrue(message = "RUNNING") { RootProxyService.isRunning && RootProxyService.startTimestamp > 0 }
     }
 
     @Test
