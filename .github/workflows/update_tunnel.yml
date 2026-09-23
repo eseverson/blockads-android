@@ -129,8 +129,11 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           # Published before the PR so CI on the PR can resolve the new version.
+          # Mark as prerelease and latest=false so it does not hijack the app's Latest release tag/badge.
           gh release create "tunnel-$VERSION" \
             --title "Go tunnel $VERSION" \
+            --latest=false \
+            --prerelease \
             --notes "Reproducible \`tunnel.aar\` built from \`tunnel/\` at ${GITHUB_SHA}.
 
           sha256: \`$(cat gradle/tunnel.aar.sha256)\`
