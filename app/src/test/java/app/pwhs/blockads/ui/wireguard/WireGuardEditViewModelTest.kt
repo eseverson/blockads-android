@@ -201,7 +201,7 @@ class WireGuardEditViewModelTest {
         vm.setPrivateKey(" $KEY_A\n")
         vm.events.test {
             vm.save()
-            assertEquals(EditEvent.Saved("a"), awaitItem())
+            assertEquals(EditEvent.Saved("Alpha"), awaitItem())
         }
     }
 }
