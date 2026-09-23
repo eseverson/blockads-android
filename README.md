@@ -91,19 +91,15 @@ improve the app.
 
 ### Steps
 
-1. Clone the repository:
+> [!TIP]
+> Historical versions of the Go binary (`tunnel.aar`) were committed in the past before being moved to GitHub Releases. To avoid downloading ~1.2GB of old binaries, **use blobless clone (`--filter=blob:limit=1m`)** to download only ~20MB.
 
-   > [!TIP]
-   > Historical versions of the Go binary (`tunnel.aar`) were committed in the past before being moved to GitHub Releases. To avoid downloading ~1.2GB of old binaries, **use blobless clone** to download only ~20MB:
-   > ```bash
-   > git clone --filter=blob:limit=1m https://github.com/pass-with-high-score/blockads-android.git
-   > cd blockads-android
-   > ```
-   > Or for a shallow clone (latest commit only):
-   > ```bash
-   > git clone --depth=1 https://github.com/pass-with-high-score/blockads-android.git
-   > cd blockads-android
-   > ```
+1. Clone the repository:
+   ```bash
+   git clone --filter=blob:limit=1m https://github.com/pass-with-high-score/blockads-android.git
+   cd blockads-android
+   ```
+   *(Or for a shallow clone: `git clone --depth=1 https://github.com/pass-with-high-score/blockads-android.git`)*
 
 2. **(Optional)** Build the Go tunnel AAR/JAR from source (with Android 15 16KB page size support):
    ```bash
