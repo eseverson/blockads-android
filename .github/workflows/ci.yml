@@ -11,6 +11,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  go-test:
+    name: Go vet & test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tunnel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.5'
+          cache-dependency-path: tunnel/go.sum
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race -short ./...
+
   build:
     name: Build & Lint
     runs-on: ubuntu-latest
@@ -71,6 +93,19 @@ jobs:
       # gradle/tunnel.aar.sha256.
       - name: Verify published tunnel.aar
         run: ./gradlew verifyTunnelAar
+
+      - name: Unit tests
+        run: ./gradlew -Ptunnel.source=local :app:testDebugUnitTest
+
+      - name: Upload unit test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: |
+            app/build/reports/tests/
+            app/build/test-results/
+          retention-days: 7
 
       - name: Lint
         run: ./gradlew -Ptunnel.source=local lint

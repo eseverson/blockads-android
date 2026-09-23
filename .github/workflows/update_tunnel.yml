@@ -77,6 +77,11 @@ jobs:
         with:
           go-version: '1.23.5'
 
+      - name: Test tunnel
+        if: steps.version.outputs.publish == 'true'
+        working-directory: tunnel
+        run: go vet ./... && go test -race -short ./...
+
       - name: Build tunnel.aar natively
         if: steps.version.outputs.publish == 'true'
         env:
