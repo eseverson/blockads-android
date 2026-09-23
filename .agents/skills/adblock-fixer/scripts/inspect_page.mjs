@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Inspect active WebView tab in BlockAds Android app.
- * Run: node .agent/skills/adblock-fixer/scripts/inspect_page.mjs
+ * Run: node .agents/skills/adblock-fixer/scripts/inspect_page.mjs
  */
 (async () => {
     try {

@@ -5,7 +5,7 @@ description: Scan the codebase for architectural issues, files exceeding 500 lin
 
 # Code Audit & Refactoring Skill
 
-This skill diagnoses code smells, architectural violations, and rule non-compliance across the `blockads-android` project, then guides safe, incremental refactoring according to project standards (`GEMINI.md` and `.agent/rules/`).
+This skill diagnoses code smells, architectural violations, and rule non-compliance across the `blockads-android` project, then guides safe, incremental refactoring according to project standards (`GEMINI.md` and `.agents/rules/`).
 
 ## Capabilities
 
@@ -27,7 +27,7 @@ This skill diagnoses code smells, architectural violations, and rule non-complia
 Execute the built-in audit script from the terminal:
 
 ```bash
-python3 .agent/skills/code-audit/scripts/audit_codebase.py
+python3 .agents/skills/code-audit/scripts/audit_codebase.py
 ```
 
 This generates an instant Markdown report covering:

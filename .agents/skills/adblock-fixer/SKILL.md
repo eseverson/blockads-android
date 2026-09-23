@@ -20,7 +20,7 @@ Khi người dùng báo "check trang này" hoặc "check web hiện tại":
    curl -s http://127.0.0.1:9222/json
    ```
 2. **Nguyên tắc tiết kiệm token (Smart Work)**:
-   - **Ưu tiên 100% text qua DevTools**: Chạy script inspect DOM qua DevTools WebSocket (`.agent/skills/adblock-fixer/scripts/inspect_page.mjs` hoặc node one-liner) để lấy danh sách class, id, overlay, scripts. Việc này chỉ tốn vài chục token text, thay vì 1.000+ token cho mỗi bức ảnh.
+   - **Ưu tiên 100% text qua DevTools**: Chạy script inspect DOM qua DevTools WebSocket (`.agents/skills/adblock-fixer/scripts/inspect_page.mjs` hoặc node one-liner) để lấy danh sách class, id, overlay, scripts. Việc này chỉ tốn vài chục token text, thay vì 1.000+ token cho mỗi bức ảnh.
    - **Không tự động chụp ảnh**: Bỏ qua bước chụp ảnh (`screencap`) và đọc ảnh trong turn chat, trừ khi người dùng chủ động yêu cầu xem ảnh. Để người dùng tự verify trực tiếp trên thiết bị thật.
 
 
