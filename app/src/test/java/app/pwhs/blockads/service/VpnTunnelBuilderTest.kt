@@ -27,7 +27,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Drives VpnTunnelBuilder against a recording VpnService.Builder; a TunnelPlan seam would make this plain JVM. */
+/** Checks that VpnTunnelBuilder applies a TunnelPlan to a real (recording) VpnService.Builder; plan logic is in TunnelPlannerTest. */
 @RunWith(RobolectricTestRunner::class)
 class VpnTunnelBuilderTest {
 
@@ -150,6 +150,29 @@ class VpnTunnelBuilderTest {
         excludeLan = true
         establish()
         assertEquals(4, routes.count { it.startsWith("-") })
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.TIRAMISU])
+    fun `a failing LAN exclusion skips the remaining ones but still builds the tunnel`() {
+        routingMode = AppPreferences.ROUTING_MODE_WIREGUARD
+        wgJson = wgConfig.toJson()
+        excludeLan = true
+        var attempts = 0
+        every { anyConstructed<VpnService.Builder>().excludeRoute(any<IpPrefix>()) } answers {
+            attempts++; throw IllegalArgumentException("nope")
+        }
+        assertTrue(establish() is TunnelResult.Success)
+        assertEquals(1, attempts)
+        assertTrue("100.64.100.1/32" in routes)
+    }
+
+    @Test
+    fun `a malformed wireguard address is a retryable failure`() {
+        routingMode = AppPreferences.ROUTING_MODE_WIREGUARD
+        wgJson = wgConfig.copy(interfaceConfig = wgConfig.interfaceConfig.copy(address = listOf("bogus"))).toJson()
+        every { anyConstructed<VpnService.Builder>().addAddress(eq("bogus"), any()) } throws IllegalArgumentException("Bad address")
+        assertEquals(TunnelResult.Failure, establish())
     }
 
     @Test
