@@ -6,7 +6,7 @@
 <p>Built with Jetpack Compose and Material 3 for a modern, premium experience.</p>
   <br><br>
   <a href="https://github.com/pass-with-high-score/blockads-android/releases">
-    <img src="https://img.shields.io/github/v/release/pass-with-high-score/blockads-android">
+    <img src="https://img.shields.io/github/v/release/pass-with-high-score/blockads-android?filter=v*">
   </a>
   <a href="https://github.com/pass-with-high-score/blockads-android/releases">
     <img src="https://img.shields.io/github/downloads/pass-with-high-score/blockads-android/total">
