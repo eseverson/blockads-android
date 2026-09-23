@@ -103,6 +103,25 @@ android {
         }
     }
 
+    lint {
+        checkReleaseBuilds = true
+        // Existing findings live in the baseline; anything new fails the build.
+        // Regenerate with ./gradlew :app:updateLintBaseline after fixing baselined issues.
+        baseline = file("lint-baseline.xml")
+        error += setOf(
+            "SetJavaScriptEnabled",
+            "JavascriptInterface",
+            "AddJavascriptInterface",
+            "AllowBackup",
+            "ExportedReceiver",
+            "ExportedService",
+            "SetWorldReadable",
+            "SetWorldWritable",
+            "WorldReadableFiles",
+            "WorldWriteableFiles",
+        )
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
