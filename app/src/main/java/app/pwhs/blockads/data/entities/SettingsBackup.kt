@@ -15,7 +15,7 @@ data class SettingsBackup(
     val safeSearchEnabled: Boolean = false,
     val youtubeRestrictedMode: Boolean = false,
     val dailySummaryEnabled: Boolean = true,
-    val milestoneNotificationsEnabled: Boolean = true,
+    val milestoneNotificationsEnabled: Boolean = false,
     val activeProfileType: String = "",
     val highContrast: Boolean = false,
     val firewallEnabled: Boolean = false,

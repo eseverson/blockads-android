@@ -108,10 +108,10 @@ class HomeViewModel(
 
     val milestoneReached: StateFlow<Long?> = combine(
         blockedCount,
-        appPrefs.lastSeenMilestoneDialog
-    ) { blocked, lastSeen ->
-        val reached = NotificationHelper.MILESTONES.filter { it <= blocked.toLong() }.maxOrNull()
-        if (reached != null && reached > lastSeen) reached else null
+        appPrefs.lastSeenMilestoneDialog,
+        appPrefs.milestoneNotificationsEnabled
+    ) { blocked, lastSeen, enabled ->
+        NotificationHelper.unseenMilestone(blocked.toLong(), lastSeen, enabled)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     fun dismissMilestoneDialog(milestone: Long) {
