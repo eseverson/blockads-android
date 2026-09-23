@@ -211,4 +211,6 @@
     <string name="dns_block_doh_bypass_title">Blokir Bypass DNS-over-HTTPS (DoH)</string>
     <string name="dns_block_doh_bypass_desc">Cegah aplikasi dan browser melewati pemfilteran lokal menggunakan DoH/DoT terenkripsi</string>
     <string name="dns_block_doh_bypass_notice">Catatan: Jika browser Anda (mis. Chrome) menampilkan kesalahan koneksi (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG), atur \"Gunakan DNS aman\" di setelan browser ke \"Otomatis\".</string>
+    <string name="allow_app_bypass_title">Izinkan Aplikasi Melewati VPN</string>
+    <string name="allow_app_bypass_description">Izinkan aplikasi yang mengikat koneksi ke satu jaringan tertentu (Android Auto nirkabel, transmisi, penyiapan perangkat) mengaksesnya langsung. Semua lalu lintas lainnya tetap melalui tunnel.</string>
 </resources>

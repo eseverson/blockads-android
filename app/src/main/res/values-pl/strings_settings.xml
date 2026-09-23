@@ -211,4 +211,6 @@
     <string name="dns_block_doh_bypass_title">Blokuj omijanie DNS-over-HTTPS (DoH)</string>
     <string name="dns_block_doh_bypass_desc">Zapobiegaj omijaniu lokalnego filtrowania przez aplikacje i przeglądarki przy użyciu szyfrowanego DoH/DoT</string>
     <string name="dns_block_doh_bypass_notice">Uwaga: Jeśli Twoja przeglądarka (np. Chrome) wyświetla błąd połączenia (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG), ustaw opcję „Używaj bezpiecznego DNS” w ustawieniach przeglądarki na „Automatycznie”.</string>
+    <string name="allow_app_bypass_title">Zezwalaj aplikacjom na omijanie VPN</string>
+    <string name="allow_app_bypass_description">Pozwala aplikacjom przypisanym do konkretnej sieci (bezprzewodowy Android Auto, przesyłanie, konfiguracja urządzeń) na bezpośredni dostęp. Cały pozostały ruch przechodzi przez tunel.</string>
 </resources>

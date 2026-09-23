@@ -211,4 +211,6 @@
     <string name="dns_block_doh_bypass_title">DNS-over-HTTPS (DoH) による回避をブロック</string>
     <string name="dns_block_doh_bypass_desc">アプリやブラウザが暗号化されたDoH/DoTを使用してローカルフィルタリングを回避するのを防止します</string>
     <string name="dns_block_doh_bypass_notice">注意: ブラウザ (Chromeなど) で接続エラー (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG) が表示される場合は、ブラウザ設定の「セキュア DNS を使用する」を「自動」に設定してください。</string>
+    <string name="allow_app_bypass_title">アプリによるVPNのバイパスを許可</string>
+    <string name="allow_app_bypass_description">特定のネットワークに接続を固定するアプリ（ワイヤレスAndroid Auto、キャスト、デバイス設定など）の直接アクセスを許可します。その他の通信はトンネルを経由します。</string>
 </resources>

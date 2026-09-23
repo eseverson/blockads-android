@@ -212,4 +212,6 @@ Veri toplama yok. İzleme yok.&quot;</string>
     <string name="dns_block_doh_bypass_title">DNS-over-HTTPS (DoH) Atlamasını Engelle</string>
     <string name="dns_block_doh_bypass_desc">Uygulamaların ve tarayıcıların şifreli DoH/DoT kullanarak yerel filtrelemeyi atlamasını önleyin</string>
     <string name="dns_block_doh_bypass_notice">Not: Tarayıcınız (ör. Chrome) bir bağlantı hatası (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG) gösteriyorsa tarayıcı ayarlarından \"Güvenli DNS kullan\" seçeneğini \"Otomatik\" olarak ayarlayın.</string>
+    <string name="allow_app_bypass_title">Uygulamaların VPN\'i Atlamasına İzin Ver</string>
+    <string name="allow_app_bypass_description">Belirli bir ağa bağlantı bağlayan uygulamaların (kablosuz Android Auto, yayınlama, cihaz kurulumu) doğrudan erişmesine izin verin. Diğer tüm trafik tünelden geçmeye devam eder.</string>
 </resources>

@@ -212,4 +212,6 @@
     <string name="dns_block_doh_bypass_title">حظر تجاوز DNS-over-HTTPS (DoH)</string>
     <string name="dns_block_doh_bypass_desc">منع التطبيقات والمتصفحات من تجاوز التصفية المحلية باستخدام DoH/DoT المشفر</string>
     <string name="dns_block_doh_bypass_notice">ملاحظة: إذا ظهر في متصفحك (مثل Chrome) خطأ في الاتصال (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG)، فاضبط \"استخدام DNS الآمن\" في إعدادات المتصفح على \"تلقائي\".</string>
+    <string name="allow_app_bypass_title">السماح للتطبيقات بتجاوز VPN</string>
+    <string name="allow_app_bypass_description">السماح للتطبيقات التي تحدد اتصالاً بشبكة معينة (Android Auto اللاسلكي، البث، إعداد الأجهزة) بالوصول إليها مباشرة. يمر باقي الاتصال عبر النفق.</string>
 </resources>

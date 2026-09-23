@@ -211,4 +211,6 @@
     <string name="dns_block_doh_bypass_title">บล็อกการข้ามผ่าน DNS-over-HTTPS (DoH)</string>
     <string name="dns_block_doh_bypass_desc">ป้องกันไม่ให้แอปและเบราว์เซอร์ข้ามการกรองในเครื่องโดยใช้ DoH/DoT ที่เข้ารหัส</string>
     <string name="dns_block_doh_bypass_notice">หมายเหตุ: หากเบราว์เซอร์ของคุณ (เช่น Chrome) แสดงข้อผิดพลาดในการเชื่อมต่อ (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG) ให้ตั้งค่า \"ใช้ DNS ที่ปลอดภัย\" ในการตั้งค่าเบราว์เซอร์เป็น \"อัตโนมัติ\"</string>
+    <string name="allow_app_bypass_title">อนุญาตให้แอปข้าม VPN</string>
+    <string name="allow_app_bypass_description">อนุญาตให้แอปที่เชื่อมต่อกับเครือข่ายเฉพาะ (Android Auto แบบไร้สาย, การแคสต์, การตั้งค่าอุปกรณ์) เข้าถึงได้โดยตรง การรับส่งข้อมูลอื่นๆ ทั้งหมดจะยังคงผ่านอุโมงค์</string>
 </resources>

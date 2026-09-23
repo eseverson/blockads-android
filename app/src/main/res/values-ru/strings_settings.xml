@@ -211,4 +211,6 @@
     <string name="dns_block_doh_bypass_title">Блокировать обход через DNS-over-HTTPS (DoH)</string>
     <string name="dns_block_doh_bypass_desc">Предотвращает обход локальной фильтрации приложениями и браузерами через зашифрованный DoH/DoT</string>
     <string name="dns_block_doh_bypass_notice">Примечание: Если ваш браузер (например, Chrome) выдает ошибку подключения (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG), установите переключатель «Использовать безопасный DNS» в настройках браузера в режим «Автоматически».</string>
+    <string name="allow_app_bypass_title">Разрешить приложениям обход VPN</string>
+    <string name="allow_app_bypass_description">Разрешить приложениям, привязанным к определенной сети (беспроводной Android Auto, трансляция, настройка устройств), прямой доступ. Весь остальной трафик проходит через туннель.</string>
 </resources>

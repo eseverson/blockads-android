@@ -211,4 +211,6 @@
     <string name="dns_block_doh_bypass_title">Blokovat obcházení DNS-over-HTTPS (DoH)</string>
     <string name="dns_block_doh_bypass_desc">Zabraňuje aplikacím a prohlížečům obcházet místní filtrování pomocí šifrovaného DoH/DoT</string>
     <string name="dns_block_doh_bypass_notice">Poznámka: Pokud váš prohlížeč (např. Chrome) zobrazí chybu připojení (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG), nastavte v nastavení prohlížeče možnost „Používat zabezpečený DNS“ na „Automaticky“.</string>
+    <string name="allow_app_bypass_title">Povolit aplikacím obejít VPN</string>
+    <string name="allow_app_bypass_description">Povolí aplikacím, které se připojují ke konkrétní síti (bezdrátové Android Auto, odesílání, nastavení zařízení), přistupovat k ní přímo. Veškerý ostatní provoz prochází tunelem.</string>
 </resources>

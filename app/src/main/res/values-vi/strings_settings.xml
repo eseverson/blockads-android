@@ -213,4 +213,6 @@
     <string name="dns_block_doh_bypass_title">Chặn rò rỉ DNS qua DoH/DoT</string>
     <string name="dns_block_doh_bypass_desc">Ngăn chặn ứng dụng và trình duyệt sử dụng DoH để lách qua bộ lọc quảng cáo</string>
     <string name="dns_block_doh_bypass_notice">Lưu ý: Nếu trình duyệt (như Chrome) báo lỗi kết nối bảo mật (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG), vui lòng chuyển cài đặt \"Sử dụng DNS an toàn\" trong trình duyệt về chế độ \"Tự động\".</string>
+    <string name="allow_app_bypass_title">Cho phép ứng dụng bỏ qua VPN</string>
+    <string name="allow_app_bypass_description">Cho phép các ứng dụng liên kết kết nối với một mạng cụ thể (Android Auto không dây, truyền màn hình, thiết lập thiết bị) truy cập trực tiếp. Mọi lưu lượng khác vẫn đi qua đường hầm.</string>
 </resources>

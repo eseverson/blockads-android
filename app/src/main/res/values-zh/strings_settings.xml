@@ -211,4 +211,6 @@
     <string name="dns_block_doh_bypass_title">阻止 DNS-over-HTTPS (DoH) 绕过</string>
     <string name="dns_block_doh_bypass_desc">防止应用程序和浏览器使用加密的 DoH/DoT 绕过本地过滤</string>
     <string name="dns_block_doh_bypass_notice">注意：如果您的浏览器（例如 Chrome）显示连接错误 (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG)，请在浏览器设置中将“使用安全 DNS”设置为“自动”。</string>
+    <string name="allow_app_bypass_title">允许应用绕过 VPN</string>
+    <string name="allow_app_bypass_description">允许将连接绑定到特定网络的应用（无线 Android Auto、投屏、设备配置）直接访问。其余所有流量仍将通过隧道传输。</string>
 </resources>

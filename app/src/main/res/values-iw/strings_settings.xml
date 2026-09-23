@@ -211,4 +211,6 @@
     <string name="dns_block_doh_bypass_title">חסום עקיפת DNS-over-HTTPS (DoH)</string>
     <string name="dns_block_doh_bypass_desc">מנע מאפליקציות ודפדפנים לעקוף סינון מקומי באמצעות DoH/DoT מוצפן</string>
     <string name="dns_block_doh_bypass_notice">הערה: אם הדפדפן שלך (למשל Chrome) מציג שגיאת חיבור (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG), הגדר את \"השתמש ב-DNS מאובטח\" בהגדרות הדפדפן ל-\"אוטומטי\".</string>
+    <string name="allow_app_bypass_title">אפשר לאפליקציות לעקוף את ה-VPN</string>
+    <string name="allow_app_bypass_description">אפשר לאפליקציות שמקשרות חיבור לרשת מסוימת (Android Auto אלחוטי, הזרמת מדיה, הגדרת מכשירים) לגשת אליה ישירות. כל שאר התעבורה עוברת דרך המנהרה.</string>
 </resources>

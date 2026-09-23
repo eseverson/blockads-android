@@ -211,4 +211,6 @@
     <string name="dns_block_doh_bypass_title">DNS-over-HTTPS (DoH) айналып өтуін бұғаттау</string>
     <string name="dns_block_doh_bypass_desc">Қолданбалар мен браузерлердің шифрланған DoH/DoT арқылы сүзгіні айналып өтуіне жол бермеу</string>
     <string name="dns_block_doh_bypass_notice">Ескертпе: Егер браузеріңіз (мысалы, Chrome) қосылым қатесін (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG) көрсетсе, браузер параметрлеріндегі \"Қауіпсіз DNS пайдалану\" параметрін \"Автоматты\" күйіне орнатыңыз.</string>
+    <string name="allow_app_bypass_title">Қолданбаларға VPN-ді айналып өтуге рұқсат беру</string>
+    <string name="allow_app_bypass_description">Белгілі бір желіге қосылатын қолданбаларға (сымсыз Android Auto, трансляция, құрылғыны реттеу) тікелей қол жеткізуге рұқсат беріңіз. Барлық басқа трафик туннель арқылы өтеді.</string>
 </resources>

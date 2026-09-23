@@ -211,4 +211,6 @@
     <string name="dns_block_doh_bypass_title">Bloquer le contournement DNS-over-HTTPS (DoH)</string>
     <string name="dns_block_doh_bypass_desc">Empêche les applications et navigateurs de contourner le filtrage local via DoH/DoT chiffré</string>
     <string name="dns_block_doh_bypass_notice">Remarque : si votre navigateur (par ex. Chrome) affiche une erreur de connexion (DNS_PROBE_FINISHED_BAD_SECURE_CONFIG), définissez « Utiliser un DNS sécurisé » sur « Automatique » dans les paramètres de votre navigateur.</string>
+    <string name="allow_app_bypass_title">Autoriser les applications à contourner le VPN</string>
+    <string name="allow_app_bypass_description">Permet aux applications qui associent une connexion à un réseau spécifique (Android Auto sans fil, diffusion, configuration d\'appareils) d\'y accéder directement. Tout le reste passe par le tunnel.</string>
 </resources>
