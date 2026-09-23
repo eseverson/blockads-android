@@ -31,7 +31,7 @@ jobs:
         run: go vet ./...
 
       - name: Test
-        run: go test -race -short ./...
+        run: go test -race -short -cover ./...
 
   build:
     name: Build & Lint
@@ -95,7 +95,14 @@ jobs:
         run: ./gradlew verifyTunnelAar
 
       - name: Unit tests
-        run: ./gradlew -Ptunnel.source=local :app:testDebugUnitTest
+        run: ./gradlew -Ptunnel.source=local :app:testDebugUnitTest :app:koverXmlReportUnit :app:koverLogUnit
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-unit
+          path: app/build/reports/kover/reportUnit.xml
+          retention-days: 7
 
       - name: Upload unit test reports
         if: failure()

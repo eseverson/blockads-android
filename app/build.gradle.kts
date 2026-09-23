@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.sentry)
+    alias(libs.plugins.kover)
 }
 
 // Where the Go tunnel comes from. See the root build file and docs/TUNNEL.md.
@@ -235,6 +236,20 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+kover {
+    currentProject {
+        createVariant("unit") { add("debug") }
+    }
+    reports {
+        filters {
+            excludes {
+                classes("*_Impl", "*_Impl\$*", "*.BuildConfig", "*ComposableSingletons*", "*.R", "*.R\$*")
+                annotatedBy("androidx.compose.ui.tooling.preview.Preview", "androidx.compose.runtime.Composable")
+            }
+        }
+    }
 }
 
 sentry {
