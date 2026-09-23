@@ -18,6 +18,7 @@ import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import app.pwhs.blockads.waitUntil
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -218,11 +219,3 @@ class BrowserHarness : AutoCloseable {
 }
 
 private const val LOCALHOST = "localhost"
-
-fun waitUntil(what: String, timeoutMs: Long = 15_000, condition: () -> Boolean) {
-    val deadline = SystemClock.uptimeMillis() + timeoutMs
-    while (!condition()) {
-        check(SystemClock.uptimeMillis() < deadline) { "Timed out waiting for $what" }
-        SystemClock.sleep(100)
-    }
-}
