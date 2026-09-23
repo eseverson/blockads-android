@@ -97,6 +97,9 @@ android {
             it.jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED")
             // Robolectric's SDK 36 runtime needs Java 21; the build itself stays on the CI JDK.
             it.javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(21)) })
+            // A non-UTC, half-hour zone so local-vs-UTC date bugs fail on UTC CI runners too.
+            it.environment("TZ", "Asia/Kolkata")
+            it.systemProperty("user.timezone", "Asia/Kolkata")
         }
     }
 
