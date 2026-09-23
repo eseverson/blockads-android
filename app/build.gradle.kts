@@ -84,6 +84,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
+    sourceSets {
+        // MigrationTestHelper reads exported schemas as assets.
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
+    }
+
     testOptions {
         unitTests.isIncludeAndroidResources = true
         unitTests.all {
