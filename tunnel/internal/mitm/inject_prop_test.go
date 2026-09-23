@@ -89,7 +89,7 @@ func TestInjectorProperties(t *testing.T) {
 	}
 }
 
-// the injector's known defects, one subtest each.
+// The injector's known defects, one subtest each.
 func TestInjectorKnownBugs(t *testing.T) {
 	t.Run("carry dropped at EOF", func(t *testing.T) {
 		t.Skip("known bug: a trailing partial \"<head\" is dropped at EOF")

@@ -230,7 +230,7 @@ func TestMitmTLSFlowClientRejectsCertBlacklists(t *testing.T) {
 	}
 }
 
-// any error string containing "tls:" blacklists the host, including
+// Any error string containing "tls:" blacklists the host, including
 // failures that have nothing to do with pinning.
 func TestMitmTLSFlowNonPinningErrorDoesNotBlacklist(t *testing.T) {
 	t.Skip("known bug: the blacklist trigger matches any error containing \"tls:\"")

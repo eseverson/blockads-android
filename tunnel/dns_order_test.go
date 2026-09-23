@@ -94,7 +94,7 @@ func TestDNSPathParity(t *testing.T) {
 	})
 }
 
-// the two paths apply the checks in different orders, and only the
+// The two paths apply the checks in different orders, and only the
 // standalone path consults DomainChecker.IsBlocked.
 //   - TUN: firewall, split DNS, DoH, SafeSearch, custom rules, tries.
 //   - standalone: DoH, firewall, custom rules, SafeSearch, tries, IsBlocked.

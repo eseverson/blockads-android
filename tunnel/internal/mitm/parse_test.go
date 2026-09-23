@@ -81,7 +81,7 @@ func TestParseClientHelloSNI(t *testing.T) {
 	}
 }
 
-// the handler reads the ClientHello with a single Read. When the hello
+// The handler reads the ClientHello with a single Read. When the hello
 // arrives in more than one TCP segment the SNI is lost, so the domain block
 // check fails open.
 func TestPeekFlowMultiSegmentClientHello(t *testing.T) {

@@ -248,7 +248,7 @@ func TestRelayHTTPFlowErrors(t *testing.T) {
 	})
 }
 
-// early-response paths skip the request body, so the next request on
+// Early-response paths skip the request body, so the next request on
 // the connection is parsed from the middle of the previous body.
 func TestRelayHTTPFlowDrainsBodiesOnEarlyPaths(t *testing.T) {
 	t.Skip("known bug: 403/204/local-asset paths do not drain request bodies, desyncing the stream")

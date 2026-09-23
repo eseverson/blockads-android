@@ -30,7 +30,7 @@ func spinUntilRunning(e *Engine) {
 	}
 }
 
-// every relayed UDP flow holds two goroutines and a protected socket
+// Every relayed UDP flow holds two goroutines and a protected socket
 // with no idle timeout, and bidiCopyFlow's upstream read never unblocks, so
 // the flows outlive Stop as well.
 func TestIdleUDPFlowsReleased(t *testing.T) {

@@ -174,7 +174,7 @@ func TestDoQConfigureResetsConnection(t *testing.T) {
 	}
 }
 
-// each reset closes the QUIC connection but never the quic.Transport or
+// Each reset closes the QUIC connection but never the quic.Transport or
 // the UDP socket handed to it, so every reconnect leaks a socket and the
 // transport's read goroutine.
 func TestDoQResetDoesNotLeakSockets(t *testing.T) {
@@ -200,7 +200,7 @@ func TestDoQResetDoesNotLeakSockets(t *testing.T) {
 	}
 }
 
-// the DoQ server URL arrives in dohURL (the same field DoH uses), but
+// The DoQ server URL arrives in dohURL (the same field DoH uses), but
 // query() hands queryDoQ the primary server instead.
 func TestDoQUsesConfiguredURL(t *testing.T) {
 	t.Skip("known bug: query() passes primaryServer, not dohURL, to queryDoQ")

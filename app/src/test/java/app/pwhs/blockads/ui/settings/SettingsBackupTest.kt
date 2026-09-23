@@ -36,7 +36,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.File
 
-/** export and import through [SettingsViewModel], the only backup code path today. */
+/** Export and import through [SettingsViewModel], the only backup code path today. */
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class SettingsBackupTest {

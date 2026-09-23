@@ -10,7 +10,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
-/** the hand-rolled parsers must survive escaped quotes, `},` inside strings and nested objects. */
+/** The hand-rolled parsers must survive escaped quotes, `},` inside strings and nested objects. */
 class FilterJsonParsingTest {
 
     @get:Rule

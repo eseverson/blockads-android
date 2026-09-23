@@ -150,7 +150,7 @@ func TestResolveFallsBackToPlain(t *testing.T) {
 	}
 }
 
-// a user who picked an encrypted protocol must not have queries silently
+// A user who picked an encrypted protocol must not have queries silently
 // leave in plaintext when that transport fails.
 func TestResolveNoPlaintextFallbackWhenEncrypted(t *testing.T) {
 	t.Skip("known bug: encrypted-protocol failures fall back to plaintext UDP")

@@ -200,7 +200,7 @@ func TestInitCARegeneratesCorruptCA(t *testing.T) {
 	}
 }
 
-// an expired or corrupt CA must not be silently regenerated over the
+// An expired or corrupt CA must not be silently regenerated over the
 // installed one; the caller should get an error to surface to the user.
 func TestInitCAExpiredIsNotSilentlyReplaced(t *testing.T) {
 	t.Skip("known bug: expired/corrupt CA is silently regenerated and overwritten")
@@ -293,7 +293,7 @@ func TestLeafCertProperties(t *testing.T) {
 	}
 }
 
-// when SNI is missing the handler falls back to the server IP, which
+// When SNI is missing the handler falls back to the server IP, which
 // lands in DNSNames instead of IPAddresses, so browsers reject the leaf.
 func TestLeafCertForIPUsesIPSAN(t *testing.T) {
 	t.Skip("known bug: IP hostnames are minted as DNSNames, not IPAddresses")

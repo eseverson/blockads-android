@@ -334,7 +334,7 @@ func TestLookupIP(t *testing.T) {
 	}
 }
 
-// when the configured upstream fails, lookupIP retries against
+// When the configured upstream fails, lookupIP retries against
 // hard-coded public resolvers over plaintext UDP, regardless of the
 // protocol the user picked.
 func TestLookupIPNoPublicPlaintextFallback(t *testing.T) {
