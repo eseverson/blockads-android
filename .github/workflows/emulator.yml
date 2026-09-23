@@ -119,27 +119,6 @@ jobs:
       - name: Build app and test APKs
         run: ./gradlew -Ptunnel.source=prebuilt :app:assembleDebug :app:assembleDebugAndroidTest
 
-      - name: Cache AVD
-        uses: actions/cache@v4
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ matrix.api-level }}-google_apis-x86_64
-
-      - name: Create AVD snapshot
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: google_apis
-          arch: x86_64
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
-
       # The tests grant VPN consent themselves (appops ACTIVATE_VPN allow) and resolve DNS from the shell UID.
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -147,8 +126,9 @@ jobs:
           api-level: ${{ matrix.api-level }}
           target: google_apis
           arch: x86_64
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # Cold boot every run: a restored snapshot can report boot_completed before the input service is up, and the
+          # runner's unlock keyevent then fails the job before any test runs.
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: ./gradlew -Ptunnel.source=prebuilt :app:connectedDebugAndroidTest
 
