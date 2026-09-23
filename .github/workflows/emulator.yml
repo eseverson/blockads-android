@@ -11,7 +11,8 @@ on:
     types: [opened, synchronize, reopened, labeled]
 
 concurrency:
-  group: emulator-${{ github.ref }}
+  # Labels other than run-emulator get a throwaway group so they can't cancel a real run.
+  group: emulator-${{ github.ref }}-${{ (github.event.action == 'labeled' && github.event.label.name != 'run-emulator') && github.run_id || 'run' }}
   cancel-in-progress: true
 
 jobs:
