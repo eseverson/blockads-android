@@ -95,33 +95,7 @@ object IptablesManager {
         // NOTE: We run each iptables command individually so that a single
         // failure (e.g. chain already exists) doesn't abort the entire setup.
         // ══════════════════════════════════════════════════════════════
-        val ipv4Commands = buildList {
-            // Create chain (may fail if leftover — that's OK)
-            add("iptables -t nat -N $CHAIN 2>/dev/null || true")
-            // Skip our own app's traffic (prevents infinite loop)
-            add("iptables -t nat -A $CHAIN -m owner --uid-owner $uid -j RETURN")
-            // Skip whitelisted apps — their DNS goes straight upstream
-            for (wUid in whitelistUids) {
-                add("iptables -t nat -A $CHAIN -m owner --uid-owner $wUid -j RETURN")
-            }
-            // Redirect UDP DNS → local engine
-            add("iptables -t nat -A $CHAIN -p udp --dport 53 -j REDIRECT --to-ports $LOCAL_DNS_PORT")
-            // Redirect TCP DNS → local engine
-            add("iptables -t nat -A $CHAIN -p tcp --dport 53 -j REDIRECT --to-ports $LOCAL_DNS_PORT")
-            // Hook into OUTPUT chain
-            add("iptables -t nat -A OUTPUT -j $CHAIN")
-
-            if (blockDoT) {
-                // filter table — DROP port 853 (DoT)
-                add("iptables -t filter -N $CHAIN_FILTER 2>/dev/null || true")
-                add("iptables -t filter -A $CHAIN_FILTER -m owner --uid-owner $uid -j RETURN")
-                for (wUid in whitelistUids) {
-                    add("iptables -t filter -A $CHAIN_FILTER -m owner --uid-owner $wUid -j RETURN")
-                }
-                add("iptables -t filter -A $CHAIN_FILTER -p tcp --dport 853 -j REJECT")
-                add("iptables -t filter -A OUTPUT -j $CHAIN_FILTER")
-            }
-        }
+        val ipv4Commands = buildIpv4Commands(uid, blockDoT, whitelistUids)
 
         var ipv4Success = true
         for (cmd in ipv4Commands) {
@@ -142,26 +116,7 @@ object IptablesManager {
         // ══════════════════════════════════════════════════════════════
         // IPv6 — try independently, many Android kernels lack ip6tables nat
         // ══════════════════════════════════════════════════════════════
-        val ipv6Commands = buildList {
-            add("ip6tables -t nat -N $CHAIN 2>/dev/null || true")
-            add("ip6tables -t nat -A $CHAIN -m owner --uid-owner $uid -j RETURN")
-            for (wUid in whitelistUids) {
-                add("ip6tables -t nat -A $CHAIN -m owner --uid-owner $wUid -j RETURN")
-            }
-            add("ip6tables -t nat -A $CHAIN -p udp --dport 53 -j REDIRECT --to-ports $LOCAL_DNS_PORT")
-            add("ip6tables -t nat -A $CHAIN -p tcp --dport 53 -j REDIRECT --to-ports $LOCAL_DNS_PORT")
-            add("ip6tables -t nat -A OUTPUT -j $CHAIN")
-
-            if (blockDoT) {
-                add("ip6tables -t filter -N $CHAIN_FILTER 2>/dev/null || true")
-                add("ip6tables -t filter -A $CHAIN_FILTER -m owner --uid-owner $uid -j RETURN")
-                for (wUid in whitelistUids) {
-                    add("ip6tables -t filter -A $CHAIN_FILTER -m owner --uid-owner $wUid -j RETURN")
-                }
-                add("ip6tables -t filter -A $CHAIN_FILTER -p tcp --dport 853 -j REJECT")
-                add("ip6tables -t filter -A OUTPUT -j $CHAIN_FILTER")
-            }
-        }
+        val ipv6Commands = buildIpv6Commands(uid, blockDoT, whitelistUids)
 
         for (cmd in ipv6Commands) {
             val result = Shell.cmd(cmd).exec()
@@ -186,31 +141,81 @@ object IptablesManager {
      * Safe to call multiple times. Uses 2>/dev/null to suppress errors.
      */
     fun teardownRules(): Boolean {
-        val commands = listOf(
-            // IPv4 nat chain
-            "iptables -t nat -D OUTPUT -j $CHAIN 2>/dev/null",
-            "iptables -t nat -F $CHAIN 2>/dev/null",
-            "iptables -t nat -X $CHAIN 2>/dev/null",
-            // IPv4 filter chain (DoT blocking)
-            "iptables -t filter -D OUTPUT -j $CHAIN_FILTER 2>/dev/null",
-            "iptables -t filter -F $CHAIN_FILTER 2>/dev/null",
-            "iptables -t filter -X $CHAIN_FILTER 2>/dev/null",
-            // IPv6 nat chain
-            "ip6tables -t nat -D OUTPUT -j $CHAIN 2>/dev/null",
-            "ip6tables -t nat -F $CHAIN 2>/dev/null",
-            "ip6tables -t nat -X $CHAIN 2>/dev/null",
-            // IPv6 filter chain (DoT blocking)
-            "ip6tables -t filter -D OUTPUT -j $CHAIN_FILTER 2>/dev/null",
-            "ip6tables -t filter -F $CHAIN_FILTER 2>/dev/null",
-            "ip6tables -t filter -X $CHAIN_FILTER 2>/dev/null",
-            // Restore Android Private DNS to automatic mode
-            "settings put global private_dns_mode opportunistic",
-        )
-
+        val commands = teardownCommands()
         Shell.cmd(*commands.toTypedArray()).exec()
         Timber.d("iptables teardown done, Private DNS restored")
         return true
     }
+
+    internal fun buildIpv4Commands(uid: Int, blockDoT: Boolean, whitelistUids: Collection<Int>): List<String> = buildList {
+        // Create chain (may fail if leftover — that's OK)
+        add("iptables -t nat -N $CHAIN 2>/dev/null || true")
+        // Skip our own app's traffic (prevents infinite loop)
+        add("iptables -t nat -A $CHAIN -m owner --uid-owner $uid -j RETURN")
+        // Skip whitelisted apps — their DNS goes straight upstream
+        for (wUid in whitelistUids) {
+            add("iptables -t nat -A $CHAIN -m owner --uid-owner $wUid -j RETURN")
+        }
+        // Redirect UDP DNS → local engine
+        add("iptables -t nat -A $CHAIN -p udp --dport 53 -j REDIRECT --to-ports $LOCAL_DNS_PORT")
+        // Redirect TCP DNS → local engine
+        add("iptables -t nat -A $CHAIN -p tcp --dport 53 -j REDIRECT --to-ports $LOCAL_DNS_PORT")
+        // Hook into OUTPUT chain
+        add("iptables -t nat -A OUTPUT -j $CHAIN")
+
+        if (blockDoT) {
+            // filter table — DROP port 853 (DoT)
+            add("iptables -t filter -N $CHAIN_FILTER 2>/dev/null || true")
+            add("iptables -t filter -A $CHAIN_FILTER -m owner --uid-owner $uid -j RETURN")
+            for (wUid in whitelistUids) {
+                add("iptables -t filter -A $CHAIN_FILTER -m owner --uid-owner $wUid -j RETURN")
+            }
+            add("iptables -t filter -A $CHAIN_FILTER -p tcp --dport 853 -j REJECT")
+            add("iptables -t filter -A OUTPUT -j $CHAIN_FILTER")
+        }
+    }
+
+    internal fun buildIpv6Commands(uid: Int, blockDoT: Boolean, whitelistUids: Collection<Int>): List<String> = buildList {
+        add("ip6tables -t nat -N $CHAIN 2>/dev/null || true")
+        add("ip6tables -t nat -A $CHAIN -m owner --uid-owner $uid -j RETURN")
+        for (wUid in whitelistUids) {
+            add("ip6tables -t nat -A $CHAIN -m owner --uid-owner $wUid -j RETURN")
+        }
+        add("ip6tables -t nat -A $CHAIN -p udp --dport 53 -j REDIRECT --to-ports $LOCAL_DNS_PORT")
+        add("ip6tables -t nat -A $CHAIN -p tcp --dport 53 -j REDIRECT --to-ports $LOCAL_DNS_PORT")
+        add("ip6tables -t nat -A OUTPUT -j $CHAIN")
+
+        if (blockDoT) {
+            add("ip6tables -t filter -N $CHAIN_FILTER 2>/dev/null || true")
+            add("ip6tables -t filter -A $CHAIN_FILTER -m owner --uid-owner $uid -j RETURN")
+            for (wUid in whitelistUids) {
+                add("ip6tables -t filter -A $CHAIN_FILTER -m owner --uid-owner $wUid -j RETURN")
+            }
+            add("ip6tables -t filter -A $CHAIN_FILTER -p tcp --dport 853 -j REJECT")
+            add("ip6tables -t filter -A OUTPUT -j $CHAIN_FILTER")
+        }
+    }
+
+    internal fun teardownCommands(): List<String> = listOf(
+        // IPv4 nat chain
+        "iptables -t nat -D OUTPUT -j $CHAIN 2>/dev/null",
+        "iptables -t nat -F $CHAIN 2>/dev/null",
+        "iptables -t nat -X $CHAIN 2>/dev/null",
+        // IPv4 filter chain (DoT blocking)
+        "iptables -t filter -D OUTPUT -j $CHAIN_FILTER 2>/dev/null",
+        "iptables -t filter -F $CHAIN_FILTER 2>/dev/null",
+        "iptables -t filter -X $CHAIN_FILTER 2>/dev/null",
+        // IPv6 nat chain
+        "ip6tables -t nat -D OUTPUT -j $CHAIN 2>/dev/null",
+        "ip6tables -t nat -F $CHAIN 2>/dev/null",
+        "ip6tables -t nat -X $CHAIN 2>/dev/null",
+        // IPv6 filter chain (DoT blocking)
+        "ip6tables -t filter -D OUTPUT -j $CHAIN_FILTER 2>/dev/null",
+        "ip6tables -t filter -F $CHAIN_FILTER 2>/dev/null",
+        "ip6tables -t filter -X $CHAIN_FILTER 2>/dev/null",
+        // Restore Android Private DNS to automatic mode
+        "settings put global private_dns_mode opportunistic",
+    )
 
     /**
      * Check if our iptables rules are currently active.
