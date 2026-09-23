@@ -40,7 +40,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicLong
 
 class AdBlockVpnService : VpnService() {
 
@@ -110,8 +109,6 @@ class AdBlockVpnService : VpnService() {
     @Volatile private var resolvedWgConfigJson: String = ""
     private var vpnStartTime: Long = 0L
     @Volatile private var todayBlockedCount: Int = 0
-    private val allTimeBlockedCount = AtomicLong(0)
-    @Volatile private var nextMilestoneThreshold: Long? = null
     @Volatile private var isReconnecting = false
     @Volatile private var isPhysicalNetworkLost = false
 
@@ -163,6 +160,7 @@ class AdBlockVpnService : VpnService() {
             onPhaseChanged = { phase -> connectingPhase = phase },
             onRefreshStats = {
                 todayBlockedCount = dnsLogDao.getBlockedCountSinceSync(startOfDayMillis())
+                notificationHelper.checkAndNotifyMilestone { dnsLogDao.getBlockedCountSync().toLong() }
             },
             onUpdateNotification = { updateNotification() },
             onLinkPropertiesChanged = { linkProperties ->
@@ -312,11 +310,6 @@ class AdBlockVpnService : VpnService() {
 
                 val startupElapsed = System.currentTimeMillis() - startupTime
                 Timber.d("VPN startup completed in ${startupElapsed}ms")
-
-                val cachedTotal = dnsLogDao.getBlockedCountSync().toLong()
-                allTimeBlockedCount.set(cachedTotal)
-                val lastMilestone = appPrefs.lastMilestoneBlocked.first()
-                nextMilestoneThreshold = notificationHelper.nextMilestoneThreshold(lastMilestone)
 
                 updateNotification()
                 Timber.d("VPN established successfully")

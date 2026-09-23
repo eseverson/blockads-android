@@ -27,6 +27,21 @@ class MilestoneGatingTest {
     }
 
     @Test
+    fun notificationFiresForNewMilestoneWhileAppIsBackgrounded() {
+        assertEquals(10_000L, NotificationHelper.milestoneToNotify(blocked = 12_000, announced = 1_000, appInForeground = false))
+    }
+
+    @Test
+    fun notificationDefersToHomeSheetWhileAppIsForegrounded() {
+        assertNull(NotificationHelper.milestoneToNotify(blocked = 12_000, announced = 1_000, appInForeground = true))
+    }
+
+    @Test
+    fun notificationSkipsMilestoneAlreadyAnnounced() {
+        assertNull(NotificationHelper.milestoneToNotify(blocked = 12_000, announced = 10_000, appInForeground = false))
+    }
+
+    @Test
     fun backupDefaultMatchesDatastoreDefault() {
         assertEquals(false, app.pwhs.blockads.data.entities.SettingsBackup().milestoneNotificationsEnabled)
     }

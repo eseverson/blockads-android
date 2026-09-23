@@ -1,5 +1,6 @@
 package app.pwhs.blockads.service
 
+import android.app.ActivityManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -31,36 +32,32 @@ class NotificationHelper(
             val reached = MILESTONES.filter { it <= blocked }.maxOrNull() ?: return null
             return reached.takeIf { it > lastSeen }
         }
+
+        /** Milestone the service should notify for; null while the app is open, since the Home sheet covers that case. */
+        fun milestoneToNotify(blocked: Long, announced: Long, appInForeground: Boolean): Long? =
+            if (appInForeground) null else unseenMilestone(blocked, announced, enabled = true)
     }
 
     private val milestoneMutex = Mutex()
 
-    /**
-     * Returns the next milestone threshold above [lastMilestone], or null if all milestones
-     * have been reached. Used to avoid DB queries until the in-memory count crosses a threshold.
-     */
-    fun nextMilestoneThreshold(lastMilestone: Long): Long? {
-        return MILESTONES.firstOrNull { it > lastMilestone }
+    // Shares seen state with the Home sheet so each milestone is announced once, by whichever surface
+    // gets there first. [blockedCount] is queried only while a milestone is still pending.
+    suspend fun checkAndNotifyMilestone(blockedCount: suspend () -> Long) {
+        milestoneMutex.withLock {
+            if (!appPrefs.milestoneNotificationsEnabled.first()) return
+            val announced = maxOf(appPrefs.lastMilestoneBlocked.first(), appPrefs.lastSeenMilestoneDialog.first())
+            if (MILESTONES.none { it > announced }) return
+            val milestone = milestoneToNotify(blockedCount(), announced, isAppInForeground()) ?: return
+            appPrefs.setLastMilestoneBlocked(milestone)
+            appPrefs.setLastSeenMilestoneDialog(milestone)
+            showMilestoneNotification(milestone)
+        }
     }
 
-    /**
-     * Thread-safe milestone check. Uses a Mutex to prevent concurrent calls from producing
-     * duplicate notifications. Caller passes the cached in-memory total so no DB query is needed.
-     */
-    suspend fun checkAndNotifyMilestone(totalBlocked: Long) {
-        milestoneMutex.withLock {
-            val enabled = appPrefs.milestoneNotificationsEnabled.first()
-            if (!enabled) return
-
-            val lastMilestone = appPrefs.lastMilestoneBlocked.first()
-
-            // Advance to the highest milestone <= totalBlocked in one step to avoid spam
-            val reachedMilestone = MILESTONES.filter { it <= totalBlocked }.maxOrNull()
-            if (reachedMilestone != null && reachedMilestone > lastMilestone) {
-                appPrefs.setLastMilestoneBlocked(reachedMilestone)
-                showMilestoneNotification(reachedMilestone)
-            }
-        }
+    private fun isAppInForeground(): Boolean {
+        val info = ActivityManager.RunningAppProcessInfo()
+        ActivityManager.getMyMemoryState(info)
+        return info.importance <= ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
     }
 
     private fun showMilestoneNotification(milestone: Long) {
