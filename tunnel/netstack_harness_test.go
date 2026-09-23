@@ -6,13 +6,13 @@ import (
 	"context"
 	"net"
 	"net/netip"
+	"runtime"
 	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/miekg/dns"
 	"github.com/nqmgaming/blockads-tunnel/internal/testnet"
-	"go.uber.org/goleak"
 	"golang.org/x/sys/unix"
 )
 
@@ -217,8 +217,18 @@ func newNetEngine(t *testing.T) (*Engine, *upstream) {
 // the test (run it before the harness so its cleanup runs last).
 func leakCheck(t *testing.T) {
 	t.Helper()
-	opts := []goleak.Option{goleak.IgnoreCurrent()}
-	t.Cleanup(func() { goleak.VerifyNone(t, opts...) })
+	baseline := runtime.NumGoroutine()
+	t.Cleanup(func() {
+		// Goroutines wind down asynchronously after Stop, so poll before failing.
+		deadline := time.Now().Add(5 * time.Second)
+		for runtime.NumGoroutine() > baseline && time.Now().Before(deadline) {
+			time.Sleep(20 * time.Millisecond)
+		}
+		if n := runtime.NumGoroutine(); n > baseline {
+			buf := make([]byte, 1<<20)
+			t.Errorf("%d goroutines leaked:\n%s", n-baseline, buf[:runtime.Stack(buf, true)])
+		}
+	})
 }
 
 // closedPort returns a TCP port on ip that nothing listens on.

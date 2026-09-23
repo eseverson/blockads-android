@@ -6,7 +6,6 @@ require (
 	github.com/miekg/dns v1.1.62
 	github.com/quic-go/quic-go v0.48.2
 	github.com/sagernet/gomobile v0.1.12
-	go.uber.org/goleak v1.3.0
 	golang.org/x/mobile v0.0.0-20231127183840-76ac6878050a
 	golang.org/x/sys v0.35.0
 	golang.zx2c4.com/wireguard v0.0.0-20250521234502-f333402bd9cb
