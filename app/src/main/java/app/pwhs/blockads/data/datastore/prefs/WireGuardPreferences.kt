@@ -1,6 +1,7 @@
 package app.pwhs.blockads.data.datastore.prefs
 
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -9,10 +10,22 @@ import app.pwhs.blockads.data.entities.WireGuardConfig
 import app.pwhs.blockads.data.entities.WireGuardProfile
 import app.pwhs.blockads.data.entities.WireGuardProfileList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
-class WireGuardPreferences(private val dataStore: DataStore<Preferences>) {
+/**
+ * WireGuard settings. Profiles hold private and preshared keys, so they live in [secretsStore], a separate file that
+ * backup_rules.xml and data_extraction_rules.xml exclude; everything else stays in the shared settings [dataStore].
+ * A restore therefore brings back the routing mode without any profile, and the user has to re-import.
+ */
+class WireGuardPreferences(
+    private val dataStore: DataStore<Preferences>,
+    private val secretsStore: DataStore<Preferences>,
+) {
 
     companion object {
         val KEY_ROUTING_MODE = stringPreferencesKey("routing_mode")
@@ -27,17 +40,30 @@ class WireGuardPreferences(private val dataStore: DataStore<Preferences>) {
         const val ROUTING_MODE_ROOT = "root"
 
         private const val LEGACY_PROFILE_ID = "legacy-default"
+
+        private val SECRET_KEYS = listOf(KEY_WG_CONFIG_JSON, KEY_WG_PROFILES_JSON, KEY_WG_ACTIVE_PROFILE_ID)
+    }
+
+    private val secretsMoveLock = Mutex()
+
+    @Volatile
+    private var secretsMoved = false
+
+    /** [secretsStore]'s data, after profiles written by older versions have been moved out of [dataStore]. */
+    private val secretsData: Flow<Preferences> = flow {
+        moveSecretsOutOfSharedStore()
+        emitAll(secretsStore.data)
     }
 
     val routingMode: Flow<String> = dataStore.data.map { prefs ->
         prefs[KEY_ROUTING_MODE] ?: ROUTING_MODE_DIRECT
     }
 
-    val wgProfiles: Flow<List<WireGuardProfile>> = dataStore.data.map { prefs ->
+    val wgProfiles: Flow<List<WireGuardProfile>> = secretsData.map { prefs ->
         readProfilesFromPrefs(prefs)
     }
 
-    val wgActiveProfileId: Flow<String?> = dataStore.data.map { prefs ->
+    val wgActiveProfileId: Flow<String?> = secretsData.map { prefs ->
         readActiveIdFromPrefs(prefs)
     }
 
@@ -47,6 +73,34 @@ class WireGuardPreferences(private val dataStore: DataStore<Preferences>) {
 
     val allowAppBypass: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[KEY_ALLOW_APP_BYPASS] ?: false
+    }
+
+    /**
+     * Older versions kept the profiles in the shared settings file, which auto-backup copies. Copy them over unless
+     * [secretsStore] already has profiles (an earlier move got that far), then drop them from the shared file.
+     */
+    private suspend fun moveSecretsOutOfSharedStore() {
+        if (secretsMoved) return
+        secretsMoveLock.withLock {
+            if (secretsMoved) return
+            val shared = dataStore.data.first()
+            if (SECRET_KEYS.any { shared.contains(it) }) {
+                secretsStore.edit { secrets ->
+                    if (secrets[KEY_WG_PROFILES_JSON] == null && secrets[KEY_WG_CONFIG_JSON] == null) {
+                        shared[KEY_WG_PROFILES_JSON]?.let { secrets[KEY_WG_PROFILES_JSON] = it }
+                        shared[KEY_WG_CONFIG_JSON]?.let { secrets[KEY_WG_CONFIG_JSON] = it }
+                        shared[KEY_WG_ACTIVE_PROFILE_ID]?.let { secrets[KEY_WG_ACTIVE_PROFILE_ID] = it }
+                    }
+                }
+                dataStore.edit { prefs -> SECRET_KEYS.forEach { prefs.remove(it) } }
+            }
+            secretsMoved = true
+        }
+    }
+
+    private suspend fun editSecrets(transform: suspend (MutablePreferences) -> Unit) {
+        moveSecretsOutOfSharedStore()
+        secretsStore.edit(transform)
     }
 
     private fun readProfilesFromPrefs(prefs: Preferences): List<WireGuardProfile> {
@@ -95,7 +149,7 @@ class WireGuardPreferences(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun addOrUpdateWgProfile(profile: WireGuardProfile, makeActive: Boolean = false) {
-        dataStore.edit { prefs ->
+        editSecrets { prefs ->
             val current = readProfilesFromPrefs(prefs).toMutableList()
             val idx = current.indexOfFirst { it.id == profile.id }
             if (idx >= 0) current[idx] = profile else current.add(profile)
@@ -106,7 +160,7 @@ class WireGuardPreferences(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun removeWgProfile(id: String) {
-        dataStore.edit { prefs ->
+        editSecrets { prefs ->
             val current = readProfilesFromPrefs(prefs).filterNot { it.id == id }
             prefs[KEY_WG_PROFILES_JSON] = WireGuardProfileList(current).toJson()
             if (prefs[KEY_WG_ACTIVE_PROFILE_ID] == id) {
@@ -122,14 +176,14 @@ class WireGuardPreferences(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun setActiveWgProfile(id: String) {
-        dataStore.edit { prefs ->
+        editSecrets { prefs ->
             prefs[KEY_WG_ACTIVE_PROFILE_ID] = id
             prefs.remove(KEY_WG_CONFIG_JSON)
         }
     }
 
     suspend fun renameWgProfile(id: String, name: String) {
-        dataStore.edit { prefs ->
+        editSecrets { prefs ->
             val current = readProfilesFromPrefs(prefs).map {
                 if (it.id == id) it.copy(name = name) else it
             }
@@ -139,7 +193,7 @@ class WireGuardPreferences(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun clearAllWgProfiles() {
-        dataStore.edit { prefs ->
+        editSecrets { prefs ->
             prefs.remove(KEY_WG_PROFILES_JSON)
             prefs.remove(KEY_WG_ACTIVE_PROFILE_ID)
             prefs.remove(KEY_WG_CONFIG_JSON)
@@ -147,17 +201,17 @@ class WireGuardPreferences(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun migrateLegacyWgConfigIfNeeded() {
-        dataStore.edit { prefs ->
+        editSecrets { prefs ->
             if (prefs[KEY_WG_PROFILES_JSON] != null) {
                 prefs.remove(KEY_WG_CONFIG_JSON)
-                return@edit
+                return@editSecrets
             }
-            val legacyJson = prefs[KEY_WG_CONFIG_JSON] ?: return@edit
+            val legacyJson = prefs[KEY_WG_CONFIG_JSON] ?: return@editSecrets
             val cfg = try {
                 WireGuardConfig.fromJson(legacyJson)
             } catch (_: Exception) {
                 prefs.remove(KEY_WG_CONFIG_JSON)
-                return@edit
+                return@editSecrets
             }
             val profile = WireGuardProfile(LEGACY_PROFILE_ID, "Default", cfg)
             prefs[KEY_WG_PROFILES_JSON] = WireGuardProfileList(listOf(profile)).toJson()

@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.Flow
 
 val Context.blockAdsDataStore: DataStore<Preferences> by preferencesDataStore(name = "blockads_prefs")
 
+/** WireGuard profiles and their keys, kept out of backups: see backup_rules.xml. */
+val Context.wireGuardSecretsDataStore: DataStore<Preferences> by preferencesDataStore(name = "blockads_wg_secrets")
+
 class AppPreferences(context: Context) {
 
     private val dataStore = context.blockAdsDataStore
@@ -22,7 +25,7 @@ class AppPreferences(context: Context) {
     val dns = DnsPreferences(dataStore)
     val appearance = AppearancePreferences(dataStore)
     val filter = FilterPreferences(dataStore)
-    val wireguard = WireGuardPreferences(dataStore)
+    val wireguard = WireGuardPreferences(dataStore, context.wireGuardSecretsDataStore)
     val vpnSecurity = VpnSecurityPreferences(dataStore)
 
     companion object {

@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-   Sample backup rules file; uncomment and customize as necessary.
+   Backup rules for API 30 and below (API 31+ uses data_extraction_rules.xml).
    See https://developer.android.com/guide/topics/data/autobackup
-   for details.
-   Note: This file is ignored for devices older than API 31
-   See https://developer.android.com/about/versions/12/backup-restore
 -->
 <full-backup-content>
-    <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+    <!-- WireGuard profiles carry private and preshared keys. A restore keeps the routing mode but no profile, so the
+         user re-imports. -->
+    <exclude domain="file" path="datastore/blockads_wg_secrets.preferences_pb" />
 </full-backup-content>
