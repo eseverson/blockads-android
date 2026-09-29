@@ -56,7 +56,7 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: platform-tools ndk;${{ env.NDK_VERSION }}
+          packages: platform-tools platforms;android-36 ndk;${{ env.NDK_VERSION }}
 
       - name: Export NDK path
         run: echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
