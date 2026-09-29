@@ -8,6 +8,8 @@
 #     uses only the github context and restores the newest entry by prefix.
 #   * The catthehacker ubuntu image has no Android SDK or NDK, so both are
 #     installed here.
+#   * The image's locale is POSIX, so javac (run by gomobile) would read the UTF-8
+#     comments in the generated bindings as ASCII; the job sets a UTF-8 locale.
 #
 # pull_request_target runs this file from main against the PR head, so PRs whose
 # branches mirror an upstream PR (and so carry no .forgejo/) still get a build.
@@ -30,6 +32,8 @@ jobs:
       GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m"
       TUNNEL_REPO: ${{ vars.TUNNEL_REPO }}
       NDK_VERSION: 26.1.10909125
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
 
     steps:
       - name: Checkout
