@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import app.pwhs.blockads.BuildConfig
 import app.pwhs.blockads.data.datastore.AppPreferences
 import app.pwhs.blockads.ui.browser.elementrules.ElementRulesScreen
 import app.pwhs.blockads.ui.theme.BlockadsTheme
@@ -63,7 +64,7 @@ class BrowserActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        android.webkit.WebView.setWebContentsDebuggingEnabled(true)
+        android.webkit.WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
 
         requestMediaAudioFocus()
 
